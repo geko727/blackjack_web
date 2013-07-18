@@ -15,4 +15,13 @@ Player's cards </br>
 </br>
 </br>
 <%= session[:player_name]%>, your total amount of points: <%= totalam(session[:player])%></br>
-What would you like to do?
+What would you like to do?</br>
+</br>
+<% if @stay_or_hit %>
+<form action='/game/player/hit' method='post'>
+		<input type='submit' class='btn' value = 'Hit'/>
+</form>
+<form action='/game/player/stay' method='post'>
+		<input type='submit' class='btn' value = 'Stay'/>
+</form>
+<% end %>

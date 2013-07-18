@@ -31,7 +31,9 @@ helpers do
 	end
 end
 
-
+before do
+	@stay_or_hit = true
+end
 
 
 get "/" do
@@ -64,4 +66,17 @@ get '/game' do
 erb :game
 end
 
+post '/game/player/hit' do 
+	session[:player] << session[:deck].pop
+	if totalam(session[:player]) > 21
+		@error = "Busted!!!"
+		@stay_or_hit = false
+	end
+	erb :game
+end
 
+post '/game/player/stay' do 
+	@success = 'You decided to stay'
+	@stay_or_hit = false
+	erb :game
+end
