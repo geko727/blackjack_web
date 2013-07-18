@@ -1,0 +1,18 @@
+<h2>Blackjack!</h2>
+
+Welcome <%= session[:player_name]%>.</br>
+</br>
+Dealer's cards </br>
+<% session[:dealer].each do |card|%>
+	<%= card.to_s%>
+<% end%>
+</br>
+</br>
+Player's cards </br>
+<% session[:player].each do |card|%>
+	<%= card.to_s%>
+<% end%>
+</br>
+</br>
+<%= session[:player_name]%>, your total amount of points: <%= totalam(session[:player])%></br>
+What would you like to do?
