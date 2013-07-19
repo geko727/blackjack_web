@@ -2,26 +2,42 @@
 
 Welcome <%= session[:player_name]%>.</br>
 </br>
+<div class = 'well'>
 Dealer's cards </br>
 <% session[:dealer].each do |card|%>
-	<%= card.to_s%>
+	<%= card_image(card)%>
 <% end%>
+<% if @dealer_btn %>
+	</br>
+	</br>
+	<form id="dealer_btn_form" action='/game/dealer/hit' method='post'>
+		<input type='submit' class='btn btn-inverse' value = 'Dealer Hit'/>
+	</form>
+<% end %>
+<% if @dealer_show_total %>
+	</br>
+	Dealer's total amount of points <%= totalam(session[:dealer])%>
+<% end %>
 </br>
 </br>
+</div>
+
+<div class = 'well'>
 Player's cards </br>
 <% session[:player].each do |card|%>
-	<%= card.to_s%>
+	<%= card_image(card)%>
 <% end%>
 </br>
 </br>
+</div>
 <%= session[:player_name]%>, your total amount of points: <%= totalam(session[:player])%></br>
 What would you like to do?</br>
 </br>
 <% if @stay_or_hit %>
-<form action='/game/player/hit' method='post'>
-		<input type='submit' class='btn' value = 'Hit'/>
+<form id="hit_form" action='/game/player/hit' method='post'>
+		<input type='submit' class='btn btn-inverse' value = 'Hit'/>
 </form>
-<form action='/game/player/stay' method='post'>
-		<input type='submit' class='btn' value = 'Stay'/>
+<form id="stay_form" action='/game/player/stay' method='post'>
+		<input type='submit' class='btn btn-danger' value = 'Stay'/>
 </form>
 <% end %>
