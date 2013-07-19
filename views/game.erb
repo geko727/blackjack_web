@@ -4,9 +4,15 @@ Welcome <%= session[:player_name]%>.</br>
 </br>
 <div class = 'well'>
 Dealer's cards </br>
-<% session[:dealer].each do |card|%>
-	<%= card_image(card)%>
+<% if session[:dealer].length > 2 || (session[:dealer].length > 2 && totalam(session[:dealer]) > 17)%>
+	<% session[:dealer].each do |card|%>
+		<%= card_image(card)%>
+	<% end%>
+	<p>Dealer's has: <%= totalam(session[:dealer])%></p>
+<% else %>
+	<img src='/images/cards/cover.jpg'><%= card_image(session[:dealer][1])%>
 <% end%>
+
 <% if @dealer_btn %>
 	</br>
 	</br>
