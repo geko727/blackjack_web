@@ -135,7 +135,7 @@ post '/game/player/hit' do
 end
 
 post '/game/player/stay' do
-	winner ("#{session[:player_name]} decided to stay")
+	#winner ("#{session[:player_name]} decided to stay")
 	redirect '/game/dealer'
 end
 
