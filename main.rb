@@ -41,13 +41,32 @@ helpers do
 				when 'A' then 'ace'
 			end
 		end
-		"<img src='/images/cards/#{suit}_#{value}.jpg'>"
+		"<img src='/images/cards/#{suit}_#{value}.jpg' style = 'width:80px; height:110px;'>"
+	end
+
+	def winner(msg)
+		session[:money] = session[:money].to_i + session[:bet].to_i
+		@success = "#{msg}"
+		@stay_or_hit = false
+		@play_again = true
+		@dealer_show_total = true
+		
+	end
+
+	def loser(msg)
+		session[:money] = session[:money] - session[:bet]
+		@error = "#{msg}"
+		@stay_or_hit = false
+		@play_again = true
+		@dealer_show_total = true
+	
 	end
 end
 
 before do
 	@stay_or_hit = true
 	@dealer_btn = false
+	@play_again = false
 	@dealer_show_total = false
 end
 
@@ -60,8 +79,8 @@ get "/" do
 	end
 end
 
-get "/new_player" do 
-
+get "/new_player" do
+	session[:money] = 500
 	erb :new_player
 end
 
@@ -71,10 +90,26 @@ post "/new_player" do
 		halt erb(:new_player)
 	end
 	session[:player_name] = params[:player_name]
+	redirect "/bet"
+end
+
+get '/bet' do 
+	session[:bet] = nil
+	erb :bet
+end
+
+
+post "/bet" do 
+	if params[:bet_amount].empty?
+		@error = "bet is required"
+		halt erb(:bet)
+	end
+	session[:bet] = params[:bet_amount].to_i
 	redirect "/game"
 end
 
 get '/game' do
+	session[:turn] = session[:player_name]
 	suits = ['hearts','clubs','diamonds','spades']
  	values = ['A',2,3,4,5,6,7,8,9,10,'J','Q','K']
  	session[:deck] = suits.product(values).shuffle!
@@ -84,7 +119,7 @@ get '/game' do
  	session[:player] << session[:deck].pop
  	session[:dealer] << session[:deck].pop
  	session[:player] << session[:deck].pop
-erb :game
+	erb :game
 end
 
 post '/game/player/hit' do 
@@ -94,25 +129,26 @@ post '/game/player/hit' do
 		#@success = "Congratulations!!!"
 		#@stay_or_hit = false
 	if totalam(session[:player]) > 21
-		@error = "Busted!!!"
-		@stay_or_hit = false
+		loser("Sorry #{session[:player_name]}, you busted.")
 	end
 	erb :game
 end
 
 post '/game/player/stay' do
-	@success = "You decided to stay"
-	@stay_or_hit = false
+	winner ("#{session[:player_name]} decided to stay")
 	redirect '/game/dealer'
 end
 
 get '/game/dealer' do
-	@stay_or_hit = false
+	session[:turn] = "dealer"
 	dealer_total = totalam(session[:dealer])
-	if dealer_total == 21
-		@error = "You lost, dealer hit blackjack"
+	player_total = totalam(session[:player])
+	if dealer_total == 21 && dealer_total > player_total
+		loser("#{session[:player_name]} lost, dealer hit BlackJack")
+	elsif dealer_total == 21 && player_total == 21
+		winner("It's a tie")
 	elsif dealer_total > 21
-		@success = "Congratulations!! Dealer's cards exceed 21"
+		winner("Congratulations #{session[:player_name]}!!! Dealer's cards exceed 21")
 	elsif dealer_total >= 17
 		redirect '/game/compare'
 	else
@@ -127,17 +163,20 @@ post '/game/dealer/hit' do
 end
 
 get '/game/compare' do  
-	@stay_or_hit = false
 	dealer_total = totalam(session[:dealer])
 	player_total = totalam(session[:player])
 	if dealer_total > player_total 
-		@error = "Sorry you lost, Dealer's cards are closer to 21 than yours."
+		loser("Sorry #{session[:player_name]}, Dealer's cards are closer to 21 than yours.")
 	elsif  player_total > dealer_total 
-		@success = "Congratulations!!! Your cards are closer to 21 than Dealer's cards."
+		winner("Congratulations #{session[:player_name]}!!! Your cards are closer to 21 than Dealer's cards.")
 	elsif player_total == 21 && dealer_total < player_total
-		@success = "Congratulations!!! You hit Blackjack."
+		winner("Congratulations #{session[:player_name]} You hit Blackjack")
 	else
-		@error = "It's a tie"
+		winner("It's a tie")
 	end
 	erb :game
+end
+
+get '/game_over' do
+	erb :game_over
 end
