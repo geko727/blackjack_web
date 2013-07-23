@@ -14,7 +14,7 @@
 <strong>Dealer's cards</strong> </br>
 <% session[:dealer].each_with_index do |card, i|%>
 		<% if session[:turn] != "dealer" && i==0%>
-		<img src='/images/cards/cover.jpg' style = 'width:80px; height:110px;'>
+		<img src='/images/cards/cover1.gif' style = 'width:80px; height:110px;'>
 		<% else%>
 		<%= card_image(card)%>
 		<%end%>
