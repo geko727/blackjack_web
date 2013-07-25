@@ -50,7 +50,6 @@ helpers do
 		@stay_or_hit = false
 		@play_again = true
 		@dealer_show_total = true
-		
 	end
 
 	def loser(msg)
@@ -63,6 +62,13 @@ helpers do
 			@play_again = false
 			@nobet = true
 		end
+	end
+
+	def tie(msg)
+		@tie = "#{msg}"
+		@stay_or_hit = false
+		@play_again = true
+		@dealer_show_total = true
 	end
 end
 
@@ -167,7 +173,7 @@ get '/game/dealer' do
 	if dealer_total == 21 && dealer_total > player_total
 		loser("#{session[:player_name]} lost, dealer hit BlackJack, You start with $#{session[:money]} and lose $#{session[:bet]} ")
 	elsif dealer_total == 21 && player_total == 21
-		winner("It's a tie")
+		tie("It's a tie")
 	elsif dealer_total > 21
 		winner("Congratulations #{session[:player_name]}!!! Dealer's cards exceed 21, You start with $#{session[:money]} and win other $#{session[:bet]}")
 	elsif dealer_total >= 17
@@ -193,7 +199,7 @@ get '/game/compare' do
 	elsif player_total == 21 && dealer_total < player_total
 		winner("Congratulations #{session[:player_name]} You hit Blackjack, You start with $#{session[:money]} and win other $#{session[:bet]}")
 	else
-		winner("It's a tie")
+		tie("It's a tie")
 	end
 	erb :game, layout: false
 end

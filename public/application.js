@@ -30,8 +30,7 @@ function player_stay() {
 
 function dealer_hit() {
   $(document).on("click", "form#dealer_btn_form", function() {
-    alert("dealer hits!");
-    $.ajax({
+     $.ajax({
       type: 'POST',
       url: '/game/dealer/hit'
     }).done(function(msg){
