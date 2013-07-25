@@ -1,7 +1,7 @@
 <h5>You have $<%= session[:money].to_i %></h5>
 <h4>How much do you want to bet?</h4>
 <form action='/bet' method='post'>
-<input type='number' min='1' max='500' name='bet_amount'/>
+<input type='number' min='1' max=<%= session[:money]%> name='bet_amount'/>
 </br>
 <input type='submit' class='btn btn-inverse' value='Ok'/>
 </form>

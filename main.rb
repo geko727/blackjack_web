@@ -59,7 +59,10 @@ helpers do
 		@stay_or_hit = false
 		@play_again = true
 		@dealer_show_total = true
-	
+		if session[:money] == 0 then
+			@play_again = false
+			@nobet = true
+		end
 	end
 end
 
@@ -68,6 +71,7 @@ before do
 	@dealer_btn = false
 	@play_again = false
 	@dealer_show_total = false
+	@nobet = false
 end
 
 
