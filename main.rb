@@ -46,7 +46,7 @@ helpers do
 
 	def winner(msg)
 		session[:money] = session[:money].to_i + session[:bet].to_i
-		@success = "#{msg}"
+		@winner = "#{msg}"
 		@stay_or_hit = false
 		@play_again = true
 		@dealer_show_total = true
@@ -55,7 +55,7 @@ helpers do
 
 	def loser(msg)
 		session[:money] = session[:money] - session[:bet]
-		@error = "#{msg}"
+		@loser = "#{msg}"
 		@stay_or_hit = false
 		@play_again = true
 		@dealer_show_total = true
@@ -132,6 +132,10 @@ get '/game' do
  	session[:player] << session[:deck].pop
  	session[:dealer] << session[:deck].pop
  	session[:player] << session[:deck].pop
+ 	if totalam(session[:player]) == 21
+		@stay_or_hit = false
+		@dealer_btn = true
+	end
 	erb :game
 end
 
@@ -142,9 +146,13 @@ post '/game/player/hit' do
 		#@success = "Congratulations!!!"
 		#@stay_or_hit = false
 	if totalam(session[:player]) > 21
-		loser("Sorry #{session[:player_name]}, you busted.")
+		loser("Sorry #{session[:player_name]}, you busted, You start with $#{session[:money]} and lose $#{session[:bet]} ")
 	end
-	erb :game
+	if totalam(session[:player]) == 21
+		@stay_or_hit = false
+		@dealer_btn = true
+	end
+	erb :game, layout: false
 end
 
 post '/game/player/stay' do
@@ -157,17 +165,17 @@ get '/game/dealer' do
 	dealer_total = totalam(session[:dealer])
 	player_total = totalam(session[:player])
 	if dealer_total == 21 && dealer_total > player_total
-		loser("#{session[:player_name]} lost, dealer hit BlackJack")
+		loser("#{session[:player_name]} lost, dealer hit BlackJack, You start with $#{session[:money]} and lose $#{session[:bet]} ")
 	elsif dealer_total == 21 && player_total == 21
 		winner("It's a tie")
 	elsif dealer_total > 21
-		winner("Congratulations #{session[:player_name]}!!! Dealer's cards exceed 21")
+		winner("Congratulations #{session[:player_name]}!!! Dealer's cards exceed 21, You start with $#{session[:money]} and win other $#{session[:bet]}")
 	elsif dealer_total >= 17
 		redirect '/game/compare'
 	else
 		@dealer_btn = true
 	end
-	erb :game
+	erb :game, layout: false
 end
 
 post '/game/dealer/hit' do 
@@ -179,17 +187,21 @@ get '/game/compare' do
 	dealer_total = totalam(session[:dealer])
 	player_total = totalam(session[:player])
 	if dealer_total > player_total 
-		loser("Sorry #{session[:player_name]}, Dealer's cards are closer to 21 than yours.")
+		loser("Sorry #{session[:player_name]}, Dealer's cards are closer to 21 than yours, You start with $#{session[:money]} and lose $#{session[:bet]} ")
 	elsif  player_total > dealer_total 
-		winner("Congratulations #{session[:player_name]}!!! Your cards are closer to 21 than Dealer's cards.")
+		winner("Congratulations #{session[:player_name]}!!! Your cards are closer to 21 than Dealer's cards, You start with $#{session[:money]} and win other $#{session[:bet]}")
 	elsif player_total == 21 && dealer_total < player_total
-		winner("Congratulations #{session[:player_name]} You hit Blackjack")
+		winner("Congratulations #{session[:player_name]} You hit Blackjack, You start with $#{session[:money]} and win other $#{session[:bet]}")
 	else
 		winner("It's a tie")
 	end
-	erb :game
+	erb :game, layout: false
 end
 
 get '/game_over' do
 	erb :game_over
+end
+
+get '/takemoney' do
+	erb :takemoney
 end
