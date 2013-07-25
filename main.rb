@@ -79,9 +79,18 @@ get "/" do
 	if session[:player_name]
 		redirect "/game"
 	else
-		redirect "/new_player"
+		redirect "/start"
 	end
 end
+
+get "/start" do
+	erb :start
+end
+
+post "/new" do
+	redirect "/new_player"
+end
+
 
 get "/new_player" do
 	session[:money] = 500
